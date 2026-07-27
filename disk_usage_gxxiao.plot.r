@@ -6,9 +6,6 @@ library(ggiraph)
 library(htmlwidgets)
 
 
-metadata <- read.csv("disk_usage_metadata.txt", sep = '\t', header = F)
-names(metadata) <- c('user', 'group')
-
 
 #df <- read.csv('disk_usage_gxxiao.txt', sep = ' ')
 df <- read.csv('/u/project/gxxiao/giovas/sea', sep = ' ')
@@ -20,14 +17,13 @@ df$mem <- df$mem/1024
 df <- df[df$mem > 2, ]
 max_mem <- max(df$mem, na.rm = TRUE) + 1
 
-df <- df %>% left_join(metadata, by = 'user')
 labdf <- df %>% group_by(user) %>% slice_max(order_by = datetime, n = 1, with_ties = FALSE) %>% ungroup()
 
 
 
 g <- ggplot(df, aes(x = datetime, y = mem, data_id = user, tolltip = user))+
 	geom_line_interactive(aes(color = user, group = user))+
-	geom_label_repel(data = labdf, aes(label = user, color = user), max.overlaps = 16, direction = "x") + 
+	geom_label_interactive(data = labdf, aes(label = user, color = user), size = 2.5) + 
 	labs(x = "date", y = "usage in Tb") +
 	scale_y_continuous(breaks = seq(2, max_mem, 2)) + 
 	theme_bw() +
@@ -36,19 +32,8 @@ g <- ggplot(df, aes(x = datetime, y = mem, data_id = user, tolltip = user))+
 
 
 g <- girafe(ggobj = g, options = list(
-        opts_hover(css = "stroke:blue;stroke-width:2;"),
+        opts_hover(css = "stroke-width:1;"),
         opts_hover_inv(css = "opacity:0.25;")
     ))
 
 saveWidget(g, "interactive_plot.html")
-
-
-pdf('/u/home/g/giovas/gxxiao/disk_usage_gxxiao.pdf', width = 10, height = 19)
-print(g)
-dev.off()
-
-
-
-
-
-
