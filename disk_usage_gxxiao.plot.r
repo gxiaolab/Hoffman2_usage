@@ -36,4 +36,4 @@ g <- girafe(ggobj = g, options = list(
         opts_hover_inv(css = "opacity:0.25;")
     ))
 
-saveWidget(g, "interactive_plot.html")
+saveWidget(g, "index.html", selfcontained = TRUE)
