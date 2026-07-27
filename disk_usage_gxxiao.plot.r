@@ -19,8 +19,8 @@ df$datetime <- as.POSIXct(paste(df$month, df$day, df$time, df$year), format = "%
 df$mem <- df$mem/1024
 df <- df[df$mem > 2, ]
 max_mem <- max(df$mem, na.rm = TRUE) + 1
-df <- df %>% left_join(metadata, by = 'user')
 
+df <- df %>% left_join(metadata, by = 'user')
 labdf <- df %>% group_by(user) %>% slice_max(order_by = datetime, n = 1, with_ties = FALSE) %>% ungroup()
 
 
@@ -29,7 +29,6 @@ g <- ggplot(df, aes(x = datetime, y = mem, data_id = user, tolltip = user))+
 	geom_line_interactive(aes(color = user, group = user))+
 	geom_label_repel(data = labdf, aes(label = user, color = user), max.overlaps = 16, direction = "x") + 
 	labs(x = "date", y = "usage in Tb") +
-	facet_grid(group~., scales = 'free')+
 	scale_y_continuous(breaks = seq(2, max_mem, 2)) + 
 	theme_bw() +
 	theme(legend.position = "none") 
@@ -37,8 +36,8 @@ g <- ggplot(df, aes(x = datetime, y = mem, data_id = user, tolltip = user))+
 
 
 g <- girafe(ggobj = g, options = list(
-        opts_hover(css = "stroke:red;stroke-width:3;"),
-        opts_hover_inv(css = "opacity:0.1;")
+        opts_hover(css = "stroke:blue;stroke-width:2;"),
+        opts_hover_inv(css = "opacity:0.25;")
     ))
 
 saveWidget(g, "interactive_plot.html")
