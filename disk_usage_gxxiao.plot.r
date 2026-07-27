@@ -24,8 +24,9 @@ df <- df %>% left_join(metadata, by = 'user')
 labdf <- df %>% group_by(user) %>% slice_max(order_by = datetime, n = 1, with_ties = FALSE) %>% ungroup()
 
 
-g <- ggplot(df, aes(x = datetime, y = mem))+
-	geom_line(aes(color = user, group = user))+
+
+g <- ggplot(df, aes(x = datetime, y = mem, data_id = user, tolltip = user))+
+	geom_line_interactive(aes(color = user, group = user))+
 	geom_label_repel(data = labdf, aes(label = user, color = user), max.overlaps = 16, direction = "x") + 
 	labs(x = "date", y = "usage in Tb") +
 	facet_grid(group~., scales = 'free')+
@@ -35,7 +36,10 @@ g <- ggplot(df, aes(x = datetime, y = mem))+
 
 
 
-g <- girafe(ggobj = g)
+g <- girafe(ggobj = g, options = list(
+        opts_hover(css = "stroke:red;stroke-width:3;"),
+        opts_hover_inv(css = "opacity:0.1;")
+    ))
 
 saveWidget(g, "interactive_plot.html")
 
